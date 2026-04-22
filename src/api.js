@@ -1,8 +1,7 @@
-const API_BASE = "http://localhost:8080";
+const API_BASE = "https://multi-messenger-backend-production.up.railway.app";
 
-// LOGIN (if used)
 export const loginUser = async (payload) => {
-  const response = await fetch(`${API_BASE}/login`, {
+  const response = await fetch(`${API_BASE}/auth/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -10,18 +9,11 @@ export const loginUser = async (payload) => {
     body: JSON.stringify(payload),
   });
 
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.message || "Login failed");
-  }
-
-  return data;
+  return await response.json();
 };
 
-// ✅ SEND MESSAGE (FIXED)
 export const sendMessageApi = async (payload) => {
-  const response = await fetch(`${API_BASE}/message/send`, {
+  const response = await fetch(`${API_BASE}/sendMessage`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -29,11 +21,5 @@ export const sendMessageApi = async (payload) => {
     body: JSON.stringify(payload),
   });
 
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.message || "Failed to send message");
-  }
-
-  return data;
+  return await response.json();
 };

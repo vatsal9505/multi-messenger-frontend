@@ -9,5 +9,8 @@
 		{
 			"path": "../../Documents/seminar"
 		}
-	]
+	],
+	"settings": {
+		"java.compile.nullAnalysis.mode": "automatic"
+	}
 }
