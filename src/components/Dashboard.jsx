@@ -1,76 +1,117 @@
-import { useState } from "react";
-import axios from "axios";
+import { useEffect, useState } from "react";
+import { fetchUsersApi, sendMessageApi } from "../api";
 
-function Dashboard() {
+function Dashboard({ setToken }) {
   const [message, setMessage] = useState("");
-  const [userId, setUserId] = useState("");
   const [platform, setPlatform] = useState("ALL");
+  const [users, setUsers] = useState([]);
+  const [selectedUserIds, setSelectedUserIds] = useState([]);
 
-  const sendMessage = async () => {
+  useEffect(() => {
+    loadUsers();
+  }, []);
+
+  const loadUsers = async () => {
     try {
-      const response = await axios.post(
-        "https://multi-messenger-backend-production.up.railway.app/sendMessage",
-        {
-          message: message,
-          userId: Number(userId),
-          platform: platform
-        }
-      );
-
-      alert(response.data.message);
-      setMessage("");
+      const data = await fetchUsersApi();
+      setUsers(data);
     } catch (error) {
-      alert("Failed to send message");
-      console.log(error);
+      console.error("Failed to fetch users", error);
     }
   };
 
-  const logout = () => {
+  const handleLogout = () => {
     localStorage.removeItem("token");
-    window.location.reload();
+    setToken(null);
+  };
+
+  const handleUserChange = (e) => {
+    const values = Array.from(e.target.selectedOptions, (option) =>
+      Number(option.value)
+    );
+    setSelectedUserIds(values);
+  };
+
+  const handleSend = async (e) => {
+    e.preventDefault();
+
+    if (selectedUserIds.length === 0) {
+      alert("Please select at least one user");
+      return;
+    }
+
+    try {
+      const data = await sendMessageApi({
+        message: message,
+        userIds: selectedUserIds,
+        platform: platform,
+      });
+
+      alert(data.message || "Message sent successfully");
+      setMessage("");
+      setSelectedUserIds([]);
+      setPlatform("ALL");
+    } catch (error) {
+      alert("Failed to send message");
+      console.error(error);
+    }
   };
 
   return (
-    <div style={{ padding: "30px", color: "white" }}>
+    <div className="dashboard-container">
       <h1>Multi Messenger Dashboard</h1>
 
-      <button onClick={logout}>Logout</button>
+      <button onClick={handleLogout}>Logout</button>
 
-      <h2 style={{ marginTop: "30px" }}>Send Message</h2>
+      <h2>Send Message</h2>
 
-      <input
-        type="text"
-        placeholder="Enter message"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        style={{ width: "300px", padding: "10px", marginBottom: "15px" }}
-      />
+      <form onSubmit={handleSend}>
+        <textarea
+          placeholder="Enter message"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          required
+          rows="6"
+          cols="50"
+        />
 
-      <br />
+        <br />
+        <br />
 
-      <input
-        type="number"
-        placeholder="Enter User ID"
-        value={userId}
-        onChange={(e) => setUserId(e.target.value)}
-        style={{ width: "300px", padding: "10px", marginBottom: "15px" }}
-      />
+        <label>Select Users:</label>
+        <br />
+        <select
+          multiple
+          value={selectedUserIds.map(String)}
+          onChange={handleUserChange}
+          style={{ width: "320px", height: "140px" }}
+        >
+          {users.map((user) => (
+            <option key={user.id} value={user.id}>
+              {user.id} - {user.fullName}
+            </option>
+          ))}
+        </select>
 
-      <br />
+        <br />
+        <br />
 
-      <select
-        value={platform}
-        onChange={(e) => setPlatform(e.target.value)}
-        style={{ width: "320px", padding: "10px", marginBottom: "20px" }}
-      >
-        <option value="ALL">All Platforms</option>
-        <option value="Telegram">Telegram</option>
-        <option value="Discord">Discord</option>
-      </select>
+        <label>Select Platform:</label>
+        <br />
+        <select
+          value={platform}
+          onChange={(e) => setPlatform(e.target.value)}
+        >
+          <option value="ALL">All Platforms</option>
+          <option value="Telegram">Telegram</option>
+          <option value="Discord">Discord</option>
+        </select>
 
-      <br />
+        <br />
+        <br />
 
-      <button onClick={sendMessage}>Send Message</button>
+        <button type="submit">Send Message</button>
+      </form>
     </div>
   );
 }
