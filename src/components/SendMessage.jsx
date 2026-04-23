@@ -57,6 +57,7 @@ function SendMessage() {
           value={platform}
           onChange={(e) => setPlatform(e.target.value)}
         >
+          <option value="ALL">All Platforms</option>
           <option value="Telegram">Telegram</option>
           <option value="Discord">Discord</option>
         </select>
