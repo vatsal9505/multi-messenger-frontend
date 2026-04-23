@@ -4,7 +4,7 @@ import { sendMessageApi } from "../api";
 function SendMessage() {
   const [message, setMessage] = useState("");
   const [userId, setUserId] = useState("");
-  const [platform, setPlatform] = useState("Telegram");
+  const [platform, setPlatform] = useState("ALL");
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -20,7 +20,7 @@ function SendMessage() {
 
       setMessage("");
       setUserId("");
-      setPlatform("Telegram");
+      setPlatform("ALL");
     } catch (error) {
       alert("Failed to send message");
       console.error(error);
@@ -41,7 +41,8 @@ function SendMessage() {
           cols="50"
         />
 
-        <br /><br />
+        <br />
+        <br />
 
         <input
           type="number"
@@ -51,7 +52,8 @@ function SendMessage() {
           required
         />
 
-        <br /><br />
+        <br />
+        <br />
 
         <select
           value={platform}
@@ -62,7 +64,8 @@ function SendMessage() {
           <option value="Discord">Discord</option>
         </select>
 
-        <br /><br />
+        <br />
+        <br />
 
         <button type="submit">Send Message</button>
       </form>
