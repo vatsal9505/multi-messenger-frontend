@@ -4,7 +4,7 @@ import { sendMessageApi } from "../api";
 function SendMessage() {
   const [message, setMessage] = useState("");
   const [userId, setUserId] = useState("");
-  const [platform, setPlatform] = useState("telegram");
+  const [platform, setPlatform] = useState("Telegram");
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -13,10 +13,14 @@ function SendMessage() {
       const data = await sendMessageApi({
         message: message,
         userId: Number(userId),
-        platform: platform
+        platform: platform,
       });
 
       alert(data.message || "Message sent successfully");
+
+      setMessage("");
+      setUserId("");
+      setPlatform("Telegram");
     } catch (error) {
       alert("Failed to send message");
       console.error(error);
@@ -24,7 +28,7 @@ function SendMessage() {
   };
 
   return (
-    <div>
+    <div className="send-container">
       <h2>Send Message</h2>
 
       <form onSubmit={handleSend}>
@@ -33,7 +37,11 @@ function SendMessage() {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           required
+          rows="6"
+          cols="50"
         />
+
+        <br /><br />
 
         <input
           type="number"
@@ -43,13 +51,17 @@ function SendMessage() {
           required
         />
 
+        <br /><br />
+
         <select
           value={platform}
           onChange={(e) => setPlatform(e.target.value)}
         >
-          <option value="telegram">Telegram</option>
-          <option value="discord">Discord</option>
+          <option value="Telegram">Telegram</option>
+          <option value="Discord">Discord</option>
         </select>
+
+        <br /><br />
 
         <button type="submit">Send Message</button>
       </form>
